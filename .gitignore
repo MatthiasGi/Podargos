@@ -1,0 +1,15 @@
+.DS_Store
+firmware/src/*.cpp
+target
+firmware/lib
+
+# VisualStudioCore
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
