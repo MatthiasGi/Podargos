@@ -132,7 +132,14 @@ void loop_hardware() {
 /////////////////////////////////// REST-API ///////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+boolean restAPI_validKey(RestAPIEndpointMsg& apiMsg, String& retStr) {
+  if (rest_key == apiMsg._pArgStr) return true;
+  retStr = "{\"response\": \"ERROR\", \"message\": \"Invalid key\"}";
+  return false;
+}
+
 void restAPI_getData(RestAPIEndpointMsg& apiMsg, String& retStr) {
+  if (!restAPI_validKey(apiMsg, retStr)) return;
   retStr = "{\"distance\": " + String(distance_cache) + "," +
            " \"magnet\": " + String(magnet_cache) + "," +
            " \"state\": " + String(state) + "," +
@@ -140,12 +147,14 @@ void restAPI_getData(RestAPIEndpointMsg& apiMsg, String& retStr) {
 }
 
 void restAPI_openDoor(RestAPIEndpointMsg& apiMsg, String& retStr) {
+  if (!restAPI_validKey(apiMsg, retStr)) return;
   if (state == STATE_CLOSED) {
     trigger_relais();
     state = STATE_OPENING;
     retStr = "{\"response\": \"OK\"}";
   } else if (state == STATE_CLOSING) {
     trigger_relais();
+    delay(400);
     trigger_relais();
     state = STATE_OPENING;
     retStr = "{\"response\": \"OK\"}";
@@ -159,6 +168,7 @@ void restAPI_openDoor(RestAPIEndpointMsg& apiMsg, String& retStr) {
 }
 
 void restAPI_closeDoor(RestAPIEndpointMsg& apiMsg, String& retStr) {
+  if (!restAPI_validKey(apiMsg, retStr)) return;
   if (state == STATE_CLOSED) {
     retStr = "{\"response\": \"OK\"}";
   } else if (state == STATE_CLOSING) {
@@ -177,12 +187,12 @@ void restAPI_closeDoor(RestAPIEndpointMsg& apiMsg, String& retStr) {
 
 void setup_restAPI() {
   pWebServer = new RdWebServer();
-  restAPIEndpoints.addEndpoint(rest_key + "/get",
-      RestAPIEndpointDef::ENDPOINT_CALLBACK, restAPI_getData, "", "");
-  restAPIEndpoints.addEndpoint(rest_key + "/open",
-      RestAPIEndpointDef::ENDPOINT_CALLBACK, restAPI_openDoor, "", "");
-  restAPIEndpoints.addEndpoint(rest_key + "/close",
-      RestAPIEndpointDef::ENDPOINT_CALLBACK, restAPI_closeDoor, "", "");
+  restAPIEndpoints.addEndpoint("get", RestAPIEndpointDef::ENDPOINT_CALLBACK,
+      restAPI_getData, "", "");
+  restAPIEndpoints.addEndpoint("open", RestAPIEndpointDef::ENDPOINT_CALLBACK,
+      restAPI_openDoor, "", "");
+  restAPIEndpoints.addEndpoint("close", RestAPIEndpointDef::ENDPOINT_CALLBACK,
+      restAPI_closeDoor, "", "");
   pWebServer->addRestAPIEndpoints(&restAPIEndpoints);
   pWebServer->start(80);
 }
