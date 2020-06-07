@@ -2,6 +2,7 @@
 firmware/src/*.cpp
 target
 firmware/lib
+__pycache__
 
 # VisualStudioCore
 .vscode/*
