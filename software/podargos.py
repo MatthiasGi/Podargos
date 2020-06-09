@@ -25,7 +25,7 @@ class Podargos:
         self._timeout = timeout
 
     async def state(self):
-        return self._execute('get')
+        return await self._execute('get')
 
     async def open(self):
         response = await self._execute('open')
@@ -39,7 +39,7 @@ class Podargos:
         Podargos._LOGGER.error(msg, params, kwargs)
 
     async def _execute(self, command, retry=2):
-        url = f'{self._ip}:{self._port}/{command}/{self._key}'
+        url = f'http://{self._ip}:{self._port}/{command}/{self._key}'
         try:
             with async_timeout.timeout(self._timeout):
                 response = await self._websession.get(url)

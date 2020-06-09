@@ -140,7 +140,7 @@ boolean restAPI_validKey(RestAPIEndpointMsg& apiMsg, String& retStr) {
 
 void restAPI_getData(RestAPIEndpointMsg& apiMsg, String& retStr) {
   if (!restAPI_validKey(apiMsg, retStr)) return;
-  retStr = "{\"response\": \"OK\"," +
+  retStr = String("{\"response\": \"OK\",") +
            " \"distance\": " + String(distance_cache) + "," +
            " \"magnet\": " + String(magnet_cache) + "," +
            " \"state\": " + String(state) + "," +
